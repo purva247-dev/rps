@@ -15,7 +15,8 @@ if ( isset($_POST['who']) && isset($_POST['pass']) ) {
 
         if ( $check == $stored_hash ) {
             $_SESSION['name'] = $_POST['who'];
-            header("Location: game.php");
+         header("Location: game.php?name=".urlencode($_POST['who']));
+return;
             return;
         } else {
             $error = "Incorrect password";
@@ -26,7 +27,7 @@ if ( isset($_POST['who']) && isset($_POST['pass']) ) {
 
 <html>
 <head>
-<title>Login</title>
+<title>Rock Paper Scissors 6493e35d</title>
 </head>
 <body>
 
