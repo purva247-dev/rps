@@ -1,48 +1,80 @@
 <?php
 session_start();
 
-$salt = 'XyZzy12*_';
-$stored_hash = '1a52e17fa899cf40fb04cfc42e6352f1';
+if ( ! isset($_SESSION['name']) ) {
+    die("Name parameter missing");
+}
 
-$error = false;
+$names = array('Rock','Paper','Scissors');
 
-if ( isset($_POST['who']) && isset($_POST['pass']) ) {
+function check($computer, $human) {
+    if ( $computer == $human ) return "Tie";
 
-    if ( strlen($_POST['who']) < 1 || strlen($_POST['pass']) < 1 ) {
-        $error = "User name and password are required";
+    if ( ($human == 0 && $computer == 2) ||
+         ($human == 1 && $computer == 0) ||
+         ($human == 2 && $computer == 1) ) {
+        return "You Win";
     } else {
-        $check = hash('md5', $salt.$_POST['pass']);
-
-        if ( $check == $stored_hash ) {
-            $_SESSION['name'] = $_POST['who'];
-            header("Location: game.php");
-            return;
-        } else {
-            $error = "Incorrect password";
-        }
+        return "You Lose";
     }
 }
 ?>
 
 <html>
 <head>
-<title>Login</title>
+<title>Rock Paper Scissors 6493e35d</title>
 </head>
 <body>
 
-<h1>Please Log In</h1>
+<h1>Rock Paper Scissors</h1>
 
-<?php
-if ( $error !== false ) {
-    echo('<p style="color:red;">'.htmlentities($error)."</p>\n");
-}
-?>
+<p>Welcome <?= htmlentities($_SESSION['name']) ?></p>
 
 <form method="post">
-Name: <input type="text" name="who"><br>
-Password: <input type="password" name="pass"><br>
-<input type="submit" value="Log In">
+<select name="play">
+<option value="-1">Select</option>
+<option value="0">Rock</option>
+<option value="1">Paper</option>
+<option value="2">Scissors</option>
+<option value="3">Test</option>
+</select>
+
+<input type="submit" value="Play">
+<input type="submit" name="logout" value="Logout">
 </form>
+
+<?php
+if ( isset($_POST['logout']) ) {
+    session_destroy();
+    header("Location: index.php");
+    return;
+}
+
+if ( isset($_POST['play']) ) {
+
+    if ( $_POST['play'] == -1 ) {
+        print "Please select a strategy";
+    } 
+    else if ( $_POST['play'] == 3 ) {
+        for($c=0;$c<3;$c++) {
+            for($h=0;$h<3;$h++) {
+                $r = check($c,$h);
+                print "Human=$names[$h] Computer=$names[$c] Result=$r <br>";
+            }
+        }
+    } 
+    else {
+        $computer = rand(0,2);
+        $human = $_POST['play'];
+
+        $result = check($computer, $human);
+
+        print "Your Play=".$names[$human]."<br>";
+        print "Computer Play=".$names[$computer]."<br>";
+        print "Result=".$result;
+    }
+}
+?>
 
 </body>
 </html>
